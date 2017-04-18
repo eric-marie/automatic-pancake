@@ -22,6 +22,9 @@ class DefaultController extends Controller
         dump($test->getBoule5());
         dump($test->getEtoile1());
         dump($test->getEtoile2());
+        dump($test->getJockerPlus());
+        dump($test->getMyMillion());
+        dump($test->getGains());
 
         die();
 
