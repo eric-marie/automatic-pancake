@@ -15,13 +15,20 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $test = new ResultPage('2017', '20170127');
-        dump($test->getBoule1());
-        dump($test->getBoule2());
-        dump($test->getBoule3());
-        dump($test->getBoule4());
-        dump($test->getBoule5());
-        dump($test->getEtoile1());
-        dump($test->getEtoile2());
+        $test2 = $test->getBoule1();
+        dump($test2);
+        $test2 = $test->getBoule2();
+        dump($test2);
+        $test2 = $test->getBoule3();
+        dump($test2);
+        $test2 = $test->getBoule4();
+        dump($test2);
+        $test2 = $test->getBoule5();
+        dump($test2);
+        $test2 = $test->getEtoile1();
+        dump($test2);
+        $test2 = $test->getEtoile2();
+        dump($test2);
 
         die();
 

@@ -94,7 +94,7 @@ class ResultPage
         if (!empty($this->boule2))
             return $this->boule2;
 
-        $this->boule1 = $this->getResultNumberByIndex(1);
+        $this->boule2 = $this->getResultNumberByIndex(1);
 
         return $this->boule2;
     }
@@ -107,7 +107,7 @@ class ResultPage
         if (!empty($this->boule3))
             return $this->boule3;
 
-        $this->boule1 = $this->getResultNumberByIndex(2);
+        $this->boule3 = $this->getResultNumberByIndex(2);
 
         return $this->boule3;
     }
@@ -120,7 +120,7 @@ class ResultPage
         if (!empty($this->boule4))
             return $this->boule4;
 
-        $this->boule1 = $this->getResultNumberByIndex(3);
+        $this->boule4 = $this->getResultNumberByIndex(3);
 
         return $this->boule4;
     }
@@ -133,7 +133,7 @@ class ResultPage
         if (!empty($this->boule5))
             return $this->boule5;
 
-        $this->boule1 = $this->getResultNumberByIndex(4);
+        $this->boule5 = $this->getResultNumberByIndex(4);
 
         return $this->boule5;
     }
@@ -146,7 +146,7 @@ class ResultPage
         if (!empty($this->etoile1))
             return $this->etoile1;
 
-        $this->boule1 = $this->getResultNumberByIndex(5);
+        $this->etoile1 = $this->getResultNumberByIndex(6);
 
         return $this->etoile1;
     }
@@ -159,7 +159,7 @@ class ResultPage
         if (!empty($this->etoile2))
             return $this->etoile2;
 
-        $this->boule1 = $this->getResultNumberByIndex(6);
+        $this->etoile2 = $this->getResultNumberByIndex(7);
 
         return $this->etoile2;
     }
@@ -178,8 +178,6 @@ class ResultPage
         $boule = $boules->item($index);
         /** @var \DOMText $bouleText */
         $bouleText = $boule->firstChild;
-        dump($bouleText);
-
         return $bouleText->wholeText;
     }
 
