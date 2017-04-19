@@ -81,7 +81,7 @@ class ResultPage
      */
     public function getBoule1()
     {
-        if (!empty($this->boule1))
+        if (!is_null($this->boule1))
             return $this->boule1;
 
         $this->boule1 = $this->getResultNumberByIndex(0);
@@ -94,7 +94,7 @@ class ResultPage
      */
     public function getBoule2()
     {
-        if (!empty($this->boule2))
+        if (!is_null($this->boule2))
             return $this->boule2;
 
         $this->boule2 = $this->getResultNumberByIndex(1);
@@ -107,7 +107,7 @@ class ResultPage
      */
     public function getBoule3()
     {
-        if (!empty($this->boule3))
+        if (!is_null($this->boule3))
             return $this->boule3;
 
         $this->boule3 = $this->getResultNumberByIndex(2);
@@ -120,7 +120,7 @@ class ResultPage
      */
     public function getBoule4()
     {
-        if (!empty($this->boule4))
+        if (!is_null($this->boule4))
             return $this->boule4;
 
         $this->boule4 = $this->getResultNumberByIndex(3);
@@ -133,7 +133,7 @@ class ResultPage
      */
     public function getBoule5()
     {
-        if (!empty($this->boule5))
+        if (!is_null($this->boule5))
             return $this->boule5;
 
         $this->boule5 = $this->getResultNumberByIndex(4);
@@ -146,7 +146,7 @@ class ResultPage
      */
     public function getEtoile1()
     {
-        if (!empty($this->etoile1))
+        if (!is_null($this->etoile1))
             return $this->etoile1;
 
         $this->etoile1 = $this->getResultNumberByIndex(6);
@@ -159,7 +159,7 @@ class ResultPage
      */
     public function getEtoile2()
     {
-        if (!empty($this->etoile2))
+        if (!is_null($this->etoile2))
             return $this->etoile2;
 
         $this->etoile2 = $this->getResultNumberByIndex(7);
@@ -192,7 +192,7 @@ class ResultPage
      */
     public function getJockerPlus()
     {
-        if (!empty($this->jockerPlus))
+        if (!is_null($this->jockerPlus))
             return $this->jockerPlus;
 
         return $this->getBonusCodeByType(self::BONUS_TYPE_JOKER_PLUS);
@@ -205,7 +205,7 @@ class ResultPage
      */
     public function getMyMillion()
     {
-        if (!empty($this->myMillion))
+        if (!is_null($this->myMillion))
             return $this->myMillion;
 
         return $this->getBonusCodeByType(self::BONUS_TYPE_MY_MILLION);
@@ -219,6 +219,10 @@ class ResultPage
     {
         /** @var \DOMElement $mymillionElt */
         $mymillionElt = $this->getPageContent()->getElementById('mymillion-link');
+
+        if(is_null($mymillionElt))
+            return null;
+
         /** @var \DOMNodeList $info */
         $info = $mymillionElt->getElementsByTagName('span');
         /** @var \DOMText $typeText */
@@ -242,25 +246,24 @@ class ResultPage
      * [
      *   [
      *      "rang" => 1,
-     *      "gagnants" => 0,
-     *      "gain" => 0
+     *      "nombre" => 0,
+     *      "gains" => 0
      *   ],
      *   [
      *      "rang" => 2,
-     *      "gagnants" => 12,
-     *      "gain" => 512739.2
+     *      "nombre" => 12,
+     *      "gains" => 512739.2
      *   ],
      *   ...
      * ]
      */
     public function getGains()
     {
-        if (!empty($this->gains))
+        if (!is_null($this->gains))
             return $this->gains;
 
         /** @var \DOMElement $panelResult */
-        $panelResult = $this->getPageContent()->getElementById('tabpanel-0');
-
+        $panelResult = $this->getPageContent()->getElementsByTagName('table')->item(0);
 
         $results = [];
         $level = 1;
@@ -269,14 +272,18 @@ class ResultPage
             /** @var \DOMNodeList $infoCells */
             $infoCells = $resultElt->getElementsByTagName('td');
 
-            if (0 == $infoCells->length) continue; // On est dans le <thead>
+            if (5 != $infoCells->length) continue; // On est dans le <thead>
 
+            /** @var \DOMText $rank */
+            $rank = $infoCells->item(1)->firstChild->firstChild;
             /** @var \DOMText $winnerCount */
             $winnerCount = $infoCells->item(2)->firstChild->firstChild;
             /** @var \DOMText $winnerPrize */
             $winnerPrize = $infoCells->item(3)->firstChild->firstChild;
 
-            $winnerCountVal = intval(str_replace(' ', '', $winnerCount->wholeText));
+            $rankVal = intval($rank->wholeText[0]);
+
+            $winnerCountVal = intval(preg_replace('/[^0-9]/', '', $winnerCount->wholeText));
 
             if (0 == $winnerCountVal) $winnerPrizeVal = 0;
             else {
@@ -287,8 +294,10 @@ class ResultPage
 
             $results[] = [
                 'rang' => $level++,
-                'gagnants' => $winnerCountVal,
-                'gain' => $winnerPrizeVal
+                'bonsNumeros' => $rankVal,
+                'bonnesEtoiles' => $infoCells->item(1)->childNodes->length - 1,
+                'nombre' => $winnerCountVal,
+                'gains' => $winnerPrizeVal
             ];
         }
 
