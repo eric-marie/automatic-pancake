@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -29,55 +30,76 @@ class Tirage
     private $jour;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="boule1", type="boolean", nullable=false)
+     * @ORM\Column(name="boule1", type="integer", nullable=false)
      */
     private $boule1;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="boule2", type="boolean", nullable=false)
+     * @ORM\Column(name="boule2", type="integer", nullable=false)
      */
     private $boule2;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="boule3", type="boolean", nullable=false)
+     * @ORM\Column(name="boule3", type="integer", nullable=false)
      */
     private $boule3;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="boule4", type="boolean", nullable=false)
+     * @ORM\Column(name="boule4", type="integer", nullable=false)
      */
     private $boule4;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="boule5", type="boolean", nullable=false)
+     * @ORM\Column(name="boule5", type="integer", nullable=false)
      */
     private $boule5;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="etoile1", type="boolean", nullable=false)
+     * @ORM\Column(name="etoile1", type="integer", nullable=false)
      */
     private $etoile1;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="etoile2", type="boolean", nullable=false)
+     * @ORM\Column(name="etoile2", type="integer", nullable=false)
      */
     private $etoile2;
 
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Gagnant", mappedBy="tirage")
+     */
+    private $gagnants;
 
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\JokerPlus", mappedBy="tirage")
+     */
+    private $jokerPlus;
+
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\MyMillion", mappedBy="tirage")
+     */
+    private $myMillion;
+
+    /**
+     * Tirage constructor.
+     */
+    public function __construct()
+    {
+        $this->gagnants = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -116,7 +138,7 @@ class Tirage
     /**
      * Set boule1
      *
-     * @param boolean $boule1
+     * @param integer $boule1
      *
      * @return Tirage
      */
@@ -130,7 +152,7 @@ class Tirage
     /**
      * Get boule1
      *
-     * @return boolean
+     * @return integer
      */
     public function getBoule1()
     {
@@ -140,7 +162,7 @@ class Tirage
     /**
      * Set boule2
      *
-     * @param boolean $boule2
+     * @param integer $boule2
      *
      * @return Tirage
      */
@@ -154,7 +176,7 @@ class Tirage
     /**
      * Get boule2
      *
-     * @return boolean
+     * @return integer
      */
     public function getBoule2()
     {
@@ -164,7 +186,7 @@ class Tirage
     /**
      * Set boule3
      *
-     * @param boolean $boule3
+     * @param integer $boule3
      *
      * @return Tirage
      */
@@ -178,7 +200,7 @@ class Tirage
     /**
      * Get boule3
      *
-     * @return boolean
+     * @return integer
      */
     public function getBoule3()
     {
@@ -188,7 +210,7 @@ class Tirage
     /**
      * Set boule4
      *
-     * @param boolean $boule4
+     * @param integer $boule4
      *
      * @return Tirage
      */
@@ -202,7 +224,7 @@ class Tirage
     /**
      * Get boule4
      *
-     * @return boolean
+     * @return integer
      */
     public function getBoule4()
     {
@@ -212,7 +234,7 @@ class Tirage
     /**
      * Set boule5
      *
-     * @param boolean $boule5
+     * @param integer $boule5
      *
      * @return Tirage
      */
@@ -226,7 +248,7 @@ class Tirage
     /**
      * Get boule5
      *
-     * @return boolean
+     * @return integer
      */
     public function getBoule5()
     {
@@ -236,7 +258,7 @@ class Tirage
     /**
      * Set etoile1
      *
-     * @param boolean $etoile1
+     * @param integer $etoile1
      *
      * @return Tirage
      */
@@ -250,7 +272,7 @@ class Tirage
     /**
      * Get etoile1
      *
-     * @return boolean
+     * @return integer
      */
     public function getEtoile1()
     {
@@ -260,7 +282,7 @@ class Tirage
     /**
      * Set etoile2
      *
-     * @param boolean $etoile2
+     * @param integer $etoile2
      *
      * @return Tirage
      */
@@ -274,10 +296,60 @@ class Tirage
     /**
      * Get etoile2
      *
-     * @return boolean
+     * @return integer
      */
     public function getEtoile2()
     {
         return $this->etoile2;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getGagnants()
+    {
+        return $this->gagnants;
+    }
+
+    /**
+     * @param ArrayCollection $gagnants
+     */
+    public function setGagnants($gagnants)
+    {
+        $this->gagnants = $gagnants;
+    }
+
+    /**
+     * @return JokerPlus|null
+     */
+    public function getJokerPlus()
+    {
+        return $this->jokerPlus;
+    }
+
+    /**
+     * @param JokerPlus $jokerPlus
+     */
+    public function setJokerPlus($jokerPlus)
+    {
+        $this->jokerPlus = $jokerPlus;
+    }
+
+    /**
+     * @return MyMillion|null
+     */
+    public function getMyMillion()
+    {
+        return $this->myMillion;
+    }
+
+    /**
+     * @param MyMillion $myMillion
+     */
+    public function setMyMillion($myMillion)
+    {
+        $this->myMillion = $myMillion;
+    }
+
+
 }

@@ -22,65 +22,63 @@ class JokerPlus
     private $id;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre1", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre1", type="integer", nullable=false)
      */
     private $chiffre1;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre2", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre2", type="integer", nullable=false)
      */
     private $chiffre2;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre3", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre3", type="integer", nullable=false)
      */
     private $chiffre3;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre4", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre4", type="integer", nullable=false)
      */
     private $chiffre4;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre5", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre5", type="integer", nullable=false)
      */
     private $chiffre5;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre6", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre6", type="integer", nullable=false)
      */
     private $chiffre6;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="chiffre7", type="boolean", nullable=false)
+     * @ORM\Column(name="chiffre7", type="integer", nullable=false)
      */
     private $chiffre7;
 
     /**
      * @var \AppBundle\Entity\Tirage
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Tirage")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Tirage", inversedBy="jokerPlus")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id")
      * })
      */
     private $tirage;
-
-
 
     /**
      * Get id
@@ -95,7 +93,7 @@ class JokerPlus
     /**
      * Set chiffre1
      *
-     * @param boolean $chiffre1
+     * @param integer $chiffre1
      *
      * @return JokerPlus
      */
@@ -109,7 +107,7 @@ class JokerPlus
     /**
      * Get chiffre1
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre1()
     {
@@ -119,7 +117,7 @@ class JokerPlus
     /**
      * Set chiffre2
      *
-     * @param boolean $chiffre2
+     * @param integer $chiffre2
      *
      * @return JokerPlus
      */
@@ -133,7 +131,7 @@ class JokerPlus
     /**
      * Get chiffre2
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre2()
     {
@@ -143,7 +141,7 @@ class JokerPlus
     /**
      * Set chiffre3
      *
-     * @param boolean $chiffre3
+     * @param integer $chiffre3
      *
      * @return JokerPlus
      */
@@ -157,7 +155,7 @@ class JokerPlus
     /**
      * Get chiffre3
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre3()
     {
@@ -167,7 +165,7 @@ class JokerPlus
     /**
      * Set chiffre4
      *
-     * @param boolean $chiffre4
+     * @param integer $chiffre4
      *
      * @return JokerPlus
      */
@@ -181,7 +179,7 @@ class JokerPlus
     /**
      * Get chiffre4
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre4()
     {
@@ -191,7 +189,7 @@ class JokerPlus
     /**
      * Set chiffre5
      *
-     * @param boolean $chiffre5
+     * @param integer $chiffre5
      *
      * @return JokerPlus
      */
@@ -205,7 +203,7 @@ class JokerPlus
     /**
      * Get chiffre5
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre5()
     {
@@ -215,7 +213,7 @@ class JokerPlus
     /**
      * Set chiffre6
      *
-     * @param boolean $chiffre6
+     * @param integer $chiffre6
      *
      * @return JokerPlus
      */
@@ -229,7 +227,7 @@ class JokerPlus
     /**
      * Get chiffre6
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre6()
     {
@@ -239,7 +237,7 @@ class JokerPlus
     /**
      * Set chiffre7
      *
-     * @param boolean $chiffre7
+     * @param integer $chiffre7
      *
      * @return JokerPlus
      */
@@ -253,7 +251,7 @@ class JokerPlus
     /**
      * Get chiffre7
      *
-     * @return boolean
+     * @return integer
      */
     public function getChiffre7()
     {

@@ -22,16 +22,23 @@ class Gagnant
     private $id;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="bons_numeros", type="boolean", nullable=false)
+     * @ORM\Column(name="rang", type="integer", nullable=false)
+     */
+    private $rang;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bons_numeros", type="integer", nullable=false)
      */
     private $bonsNumeros;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="bonnes_etoiles", type="boolean", nullable=false)
+     * @ORM\Column(name="bonnes_etoiles", type="integer", nullable=false)
      */
     private $bonnesEtoiles;
 
@@ -52,14 +59,12 @@ class Gagnant
     /**
      * @var \AppBundle\Entity\Tirage
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Tirage")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Tirage", inversedBy="gagnants")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id")
      * })
      */
     private $tirage;
-
-
 
     /**
      * Get id
@@ -72,9 +77,29 @@ class Gagnant
     }
 
     /**
+     * Set Rang
+     *
+     * @param int $rang
+     */
+    public function setRang($rang)
+    {
+        $this->rang = $rang;
+    }
+
+    /**
+     * Get Rang
+     *
+     * @return int
+     */
+    public function getRang()
+    {
+        return $this->rang;
+    }
+
+    /**
      * Set bonsNumeros
      *
-     * @param boolean $bonsNumeros
+     * @param integer $bonsNumeros
      *
      * @return Gagnant
      */
@@ -88,7 +113,7 @@ class Gagnant
     /**
      * Get bonsNumeros
      *
-     * @return boolean
+     * @return integer
      */
     public function getBonsNumeros()
     {
@@ -98,7 +123,7 @@ class Gagnant
     /**
      * Set bonnesEtoiles
      *
-     * @param boolean $bonnesEtoiles
+     * @param integer $bonnesEtoiles
      *
      * @return Gagnant
      */
@@ -112,7 +137,7 @@ class Gagnant
     /**
      * Get bonnesEtoiles
      *
-     * @return boolean
+     * @return integer
      */
     public function getBonnesEtoiles()
     {
