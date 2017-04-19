@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Tirage
  *
  * @ORM\Table(name="tirage", uniqueConstraints={@ORM\UniqueConstraint(name="tirage_uk", columns={"jour"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TirageRepository")
  */
 class Tirage
 {
