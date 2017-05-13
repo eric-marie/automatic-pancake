@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * JokerPlus
  *
  * @ORM\Table(name="joker_plus", uniqueConstraints={@ORM\UniqueConstraint(name="joker_plus_uk", columns={"tirage_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\JokerPlusRepository")
  */
 class JokerPlus
 {
@@ -71,9 +71,9 @@ class JokerPlus
     private $chiffre7;
 
     /**
-     * @var \AppBundle\Entity\Tirage
+     * @var Tirage
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Tirage", inversedBy="jokerPlus")
+     * @ORM\ManyToOne(targetEntity="TirageRepository.php", inversedBy="jokerPlus")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id")
      * })
@@ -261,11 +261,11 @@ class JokerPlus
     /**
      * Set tirage
      *
-     * @param \AppBundle\Entity\Tirage $tirage
+     * @param Tirage $tirage
      *
      * @return JokerPlus
      */
-    public function setTirage(\AppBundle\Entity\Tirage $tirage = null)
+    public function setTirage(Tirage $tirage = null)
     {
         $this->tirage = $tirage;
 
@@ -275,7 +275,7 @@ class JokerPlus
     /**
      * Get tirage
      *
-     * @return \AppBundle\Entity\Tirage
+     * @return Tirage
      */
     public function getTirage()
     {

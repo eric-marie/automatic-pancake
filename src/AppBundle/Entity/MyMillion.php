@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * MyMillion
  *
  * @ORM\Table(name="my_million", uniqueConstraints={@ORM\UniqueConstraint(name="my_million_uk", columns={"tirage_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\MyMillionRepository")
  */
 class MyMillion
 {
@@ -85,9 +85,9 @@ class MyMillion
     private $chiffre7;
 
     /**
-     * @var \AppBundle\Entity\Tirage
+     * @var Tirage
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Tirage", inversedBy="myMillion")
+     * @ORM\ManyToOne(targetEntity="TirageRepository.php", inversedBy="myMillion")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id")
      * })
@@ -323,11 +323,11 @@ class MyMillion
     /**
      * Set tirage
      *
-     * @param \AppBundle\Entity\Tirage $tirage
+     * @param Tirage $tirage
      *
      * @return MyMillion
      */
-    public function setTirage(\AppBundle\Entity\Tirage $tirage = null)
+    public function setTirage(Tirage $tirage = null)
     {
         $this->tirage = $tirage;
 
@@ -337,7 +337,7 @@ class MyMillion
     /**
      * Get tirage
      *
-     * @return \AppBundle\Entity\Tirage
+     * @return Tirage
      */
     public function getTirage()
     {

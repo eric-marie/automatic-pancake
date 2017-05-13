@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Tirage
  *
  * @ORM\Table(name="tirage", uniqueConstraints={@ORM\UniqueConstraint(name="tirage_uk", columns={"jour"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\TirageRepository")
  */
 class Tirage
 {
@@ -79,7 +79,7 @@ class Tirage
     private $etoile2;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Gagnant", mappedBy="tirage")
+     * @ORM\OneToMany(targetEntity="GagnantRepository.php", mappedBy="tirage")
      */
     private $gagnants;
 
