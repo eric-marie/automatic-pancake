@@ -8,7 +8,9 @@ use AppBundle\Entity\MyMillion;
 use AppBundle\Entity\Tirage;
 use AppBundle\Metier\FormValuesFinder;
 use AppBundle\Metier\ResultPage;
+use AppBundle\Repository\TirageRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,31 +18,23 @@ class DefaultController extends Controller
 {
     /**
      * @Route("/", name="homepage")
+     * @Template()
      */
     public function indexAction(Request $request)
     {
-        $test = new ResultPage('2017', '20170127');
-        dump($test->getBoule1());
-        dump($test->getBoule2());
-        dump($test->getBoule3());
-        dump($test->getBoule4());
-        dump($test->getBoule5());
-        dump($test->getEtoile1());
-        dump($test->getEtoile2());
-        dump($test->getJockerPlus());
-        dump($test->getMyMillion());
-        dump($test->getGains());
+        $em = $this->getDoctrine()->getManager();
+        /** @var TirageRepository $tirageRepository */
+        $tirageRepository = $em->getRepository('AppBundle:Tirage');
+        $totalCount = $tirageRepository->getTotalCount();
 
-        die();
-
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.root_dir') . '/..') . DIRECTORY_SEPARATOR,
-        ]);
+        return [
+            'totalCount' => $totalCount
+        ];
     }
 
     /**
      * @Route("/update-data/", name="update-data")
+     * @Template()
      */
     public function updateDataAction()
     {
@@ -118,5 +112,7 @@ class DefaultController extends Controller
                 $count++;
             }
         }
+
+        return [];
     }
 }
