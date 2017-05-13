@@ -38,12 +38,11 @@ class DefaultController extends Controller
      */
     public function updateDataAction()
     {
+        // TODO gérer le cas de plusieurs MyMillion (Joker+ ?) comme le 20160610
+
         $em = $this->getDoctrine()->getManager();
 
-        $higherTirageList = $em->getRepository('AppBundle:Tirage')->findBy([], ['jour' => 'desc'], 1);
-        $higherTirage = count($higherTirageList) == 1 ? $higherTirageList[0] : null;
-
-        $formValueFinder = new FormValuesFinder($higherTirage);
+        $formValueFinder = new FormValuesFinder($em->getRepository('AppBundle:Tirage'));
         $formValues = $formValueFinder->getFormValues();
 
         $count = 0;

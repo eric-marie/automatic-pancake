@@ -3,6 +3,7 @@
 namespace AppBundle\Metier;
 
 use AppBundle\Entity\Tirage;
+use AppBundle\Repository\TirageRepository;
 
 class FormValuesFinder
 {
@@ -11,16 +12,16 @@ class FormValuesFinder
     /** @var array */
     private $formValues;
 
-    /** @var Tirage */
-    private $higherTirage;
+    /** @var TirageRepository */
+    private $tirageRepository;
 
     /**
      * FormValuesFinder constructor.
-     * @param Tirage $higherTirage
+     * @param TirageRepository $tirageRepository
      */
-    public function __construct($higherTirage)
+    public function __construct($tirageRepository)
     {
-        $this->higherTirage = $higherTirage;
+        $this->tirageRepository = $tirageRepository;
     }
 
     /**
@@ -46,29 +47,26 @@ class FormValuesFinder
      */
     public function getFormValues()
     {
-        if (!is_null($this->formValues))
+        if (!is_null($this->formValues)) {
             return $this->formValues;
+        }
 
         $formValues = [];
         $lastDay = 0;
 
-        $pageContent = $this->getPageContentByYear(date('Y'), $lastDay);
-        $currentYearFormValues = $this->getDaysFromPageContent($pageContent, $lastDay);
+        $pageContent = $this->_getPageContentByYear(date('Y'), $lastDay);
+        $currentYearFormValues = $this->_getDaysFromPageContent($pageContent, $lastDay);
 
         for ($i = self::START_YEAR; $i < date('Y'); $i++) {
-            if (!is_null($this->higherTirage)) {
-                $year = intval($this->higherTirage->getJour()->format('Y'));
-                if ($year > $i) continue;
-            }
-            $pageContent = $this->getPageContentByYear($i, $lastDay);
-            $formValues[$i] = $this->getDaysFromPageContent($pageContent, $lastDay);
+            $pageContent = $this->_getPageContentByYear($i, $lastDay);
+            $formValues[$i] = $this->_getDaysFromPageContent($pageContent, $lastDay);
         }
 
         $formValues[intval(date('Y'))] = $currentYearFormValues;
 
         $this->formValues = $formValues;
 
-        return $this->formValues;
+        return $this->_cleanFormValues();
     }
 
     /**
@@ -76,7 +74,7 @@ class FormValuesFinder
      * @param int $lastDay
      * @return \DOMDocument
      */
-    private function getPageContentByYear($year, $lastDay)
+    private function _getPageContentByYear($year, $lastDay)
     {
         if (date('Y') == $year)
             $html = file_get_contents('http://www.secretsdujeu.com/euromillion/resultat');
@@ -116,7 +114,7 @@ class FormValuesFinder
      * @param int &$lastDay
      * @return array
      */
-    private function getDaysFromPageContent($pageContent, &$lastDay)
+    private function _getDaysFromPageContent($pageContent, &$lastDay)
     {
         /** @var \DOMNodeList $selectList */
         $selectList = $pageContent->getElementsByTagName('select');
@@ -128,11 +126,50 @@ class FormValuesFinder
         for ($i = $daySelect->childNodes->length - 1; $i > 0; $i--) {
             $option = $daySelect->childNodes->item($i);
             $lastDay = $option->getAttribute('value');
-            if(!is_null($this->higherTirage) && intval($this->higherTirage->getJour()->format('Ymd')) >= $lastDay)
-                continue;
             $result[] = $lastDay;
         }
 
         return $result;
+    }
+
+    /**
+     * @return array|null
+     */
+    private function _cleanFormValues()
+    {
+        if (is_null($this->formValues))
+            return null;
+
+        $newFormValues = [];
+
+        foreach ($this->formValues as $foundDays) {
+            if (0 == count($foundDays))
+                continue;
+
+            $savedDays = [];
+            $neededDays = [];
+            $year = intval(substr($foundDays[0], 0, 4));
+
+            $savedTirage = $this->tirageRepository->findByYear($year);
+
+            /** @var Tirage $tirage */
+            foreach ($savedTirage as $tirage)
+                $savedDays[] = $tirage->getJour()->format('Ymd');
+
+            foreach ($foundDays as $day) {
+                if(!in_array($day, $savedDays)) {
+                    $neededDays[] = $day;
+                }
+            }
+
+            if(0 == count($neededDays))
+                continue;
+
+            $newFormValues[$year] = $neededDays;
+        }
+
+        $this->formValues = $newFormValues;
+
+        return $this->formValues;
     }
 }
