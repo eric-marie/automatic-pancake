@@ -3,5 +3,22 @@
 {% block body %}
     <a href="{{ path('update-data') }}">Faire la mise à jour</a>
     <p>Total count : {{ totalCount }}</p>
+
+    <table>
+        <tbody>
+            {% for number in numbersOrder %}
+                <tr>
+                    <td>{{ number['boule'] }}</td>
+                    <td>{{ number['occurrence'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <thead>
+            <tr>
+                <td>Numéro</td>
+                <td>Occurrence</td>
+            </tr>
+        </thead>
+    </table>
 {% endblock %}
 

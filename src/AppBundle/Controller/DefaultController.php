@@ -26,9 +26,13 @@ class DefaultController extends Controller
         /** @var TirageRepository $tirageRepository */
         $tirageRepository = $em->getRepository('AppBundle:Tirage');
         $totalCount = $tirageRepository->getTotalCount();
+        $numbersOrder = $tirageRepository->getNumbersOrder();
+        $numbersBestFriendsOrder = $tirageRepository->getNumbersBestFriendsOrder([50]);
 
         return [
-            'totalCount' => $totalCount
+            'totalCount' => $totalCount,
+            'numbersOrder' => $numbersOrder,
+            'numbersBestFriendsOrder' => $numbersBestFriendsOrder
         ];
     }
 
