@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 
 /**
  * Class JokerPlusRepository
- * @package AppBundle\Entity
+ * @package AppBundle\Repository
  */
 class JokerPlusRepository extends EntityRepository
 {

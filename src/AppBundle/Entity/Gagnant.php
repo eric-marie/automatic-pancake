@@ -15,7 +15,7 @@ class Gagnant
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
@@ -24,35 +24,35 @@ class Gagnant
     /**
      * @var integer
      *
-     * @ORM\Column(name="rang", type="integer", nullable=false)
+     * @ORM\Column(name="rang", type="integer", nullable=false, options={"unsigned": true})
      */
     private $rang;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="bons_numeros", type="integer", nullable=false)
+     * @ORM\Column(name="bons_numeros", type="integer", nullable=false, options={"unsigned": true})
      */
     private $bonsNumeros;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="bonnes_etoiles", type="integer", nullable=false)
+     * @ORM\Column(name="bonnes_etoiles", type="integer", nullable=false, options={"unsigned": true})
      */
     private $bonnesEtoiles;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="nombre", type="integer", nullable=false)
+     * @ORM\Column(name="nombre", type="integer", nullable=false, options={"unsigned": true})
      */
     private $nombre;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="gains", type="integer", nullable=false)
+     * @ORM\Column(name="gains", type="integer", nullable=false, options={"unsigned": true})
      */
     private $gains;
 
@@ -61,7 +61,7 @@ class Gagnant
      *
      * @ORM\ManyToOne(targetEntity="Tirage", inversedBy="gagnants")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      * })
      */
     private $tirage;

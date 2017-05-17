@@ -15,7 +15,7 @@ class MyMillion
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
@@ -38,49 +38,49 @@ class MyMillion
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre1", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre1", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre1;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre2", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre2", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre2;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre3", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre3", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre3;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre4", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre4", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre4;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre5", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre5", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre5;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre6", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre6", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre6;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="chiffre7", type="integer", nullable=false)
+     * @ORM\Column(name="chiffre7", type="integer", nullable=false, options={"unsigned": true})
      */
     private $chiffre7;
 
@@ -89,7 +89,7 @@ class MyMillion
      *
      * @ORM\ManyToOne(targetEntity="Tirage", inversedBy="myMillion")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      * })
      */
     private $tirage;

@@ -16,7 +16,7 @@ class Tirage
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
@@ -32,49 +32,49 @@ class Tirage
     /**
      * @var integer
      *
-     * @ORM\Column(name="boule1", type="integer", nullable=false)
+     * @ORM\Column(name="boule1", type="integer", nullable=false, options={"unsigned": true})
      */
     private $boule1;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="boule2", type="integer", nullable=false)
+     * @ORM\Column(name="boule2", type="integer", nullable=false, options={"unsigned": true})
      */
     private $boule2;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="boule3", type="integer", nullable=false)
+     * @ORM\Column(name="boule3", type="integer", nullable=false, options={"unsigned": true})
      */
     private $boule3;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="boule4", type="integer", nullable=false)
+     * @ORM\Column(name="boule4", type="integer", nullable=false, options={"unsigned": true})
      */
     private $boule4;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="boule5", type="integer", nullable=false)
+     * @ORM\Column(name="boule5", type="integer", nullable=false, options={"unsigned": true})
      */
     private $boule5;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="etoile1", type="integer", nullable=false)
+     * @ORM\Column(name="etoile1", type="integer", nullable=false, options={"unsigned": true})
      */
     private $etoile1;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="etoile2", type="integer", nullable=false)
+     * @ORM\Column(name="etoile2", type="integer", nullable=false, options={"unsigned": true})
      */
     private $etoile2;
 
@@ -92,6 +92,11 @@ class Tirage
      * @ORM\OneToOne(targetEntity="MyMillion", mappedBy="tirage")
      */
     private $myMillion;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Statistique", mappedBy="tirage")
+     */
+    private $statistique;
 
     /**
      * Tirage constructor.

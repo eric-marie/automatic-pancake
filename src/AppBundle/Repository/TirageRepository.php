@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityRepository;
 
 /**
  * Class TirageRepository
- * @package AppBundle\Entity
+ * @package AppBundle\Repository
  */
 class TirageRepository extends EntityRepository
 {

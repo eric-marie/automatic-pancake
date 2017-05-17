@@ -42,7 +42,7 @@ class DefaultController extends Controller
      */
     public function updateDataAction()
     {
-        // TODO gérer le cas de plusieurs MyMillion (Joker+ ?) comme le 20160610
+        // TODO gérer le cas de plusieurs MyMillion comme le 20160610
 
         $em = $this->getDoctrine()->getManager();
 
