@@ -73,10 +73,8 @@ class JokerPlus
     /**
      * @var Tirage
      *
-     * @ORM\ManyToOne(targetEntity="Tirage", inversedBy="jokerPlus")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tirage_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
-     * })
+     * @ORM\OneToOne(targetEntity="Tirage", inversedBy="jokerPlus")
+     * @ORM\JoinColumn(name="tirage_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $tirage;
 

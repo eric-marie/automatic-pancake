@@ -15,13 +15,18 @@ class FormValuesFinder
     /** @var TirageRepository */
     private $tirageRepository;
 
+    /** @var string */
+    private $cacheDir;
+
     /**
      * FormValuesFinder constructor.
      * @param TirageRepository $tirageRepository
+     * @param string $cacheDir
      */
-    public function __construct($tirageRepository)
+    public function __construct($tirageRepository, $cacheDir)
     {
         $this->tirageRepository = $tirageRepository;
+        $this->cacheDir = str_replace('/', DS, str_replace('\\', DS, $cacheDir));
     }
 
     /**
@@ -51,6 +56,10 @@ class FormValuesFinder
             return $this->formValues;
         }
 
+        $formValuesCacheDir = $this->cacheDir . DS . 'FormValues';
+        if (!file_exists($formValuesCacheDir))
+            mkdir($formValuesCacheDir);
+
         $formValues = [];
         $lastDay = 0;
 
@@ -58,8 +67,18 @@ class FormValuesFinder
         $currentYearFormValues = $this->_getDaysFromPageContent($pageContent, $lastDay);
 
         for ($i = self::START_YEAR; $i < date('Y'); $i++) {
-            $pageContent = $this->_getPageContentByYear($i, $lastDay);
-            $formValues[$i] = $this->_getDaysFromPageContent($pageContent, $lastDay);
+            $yearFormValuesCacheFile = $formValuesCacheDir . DS . $i . '.json';
+            if (file_exists($yearFormValuesCacheFile)) {
+                $jsonFormValues = file_get_contents($yearFormValuesCacheFile);
+                $formValues[$i] = json_decode($jsonFormValues);
+            } else {
+                $pageContent = $this->_getPageContentByYear($i, $lastDay);
+                $formValues[$i] = $this->_getDaysFromPageContent($pageContent, $lastDay);
+
+                $jsonFormValues = json_encode($formValues[$i]);
+
+                file_put_contents($yearFormValuesCacheFile, $jsonFormValues);
+            }
         }
 
         $formValues[intval(date('Y'))] = $currentYearFormValues;
@@ -142,13 +161,12 @@ class FormValuesFinder
 
         $newFormValues = [];
 
-        foreach ($this->formValues as $foundDays) {
+        foreach ($this->formValues as $year => $foundDays) {
             if (0 == count($foundDays))
                 continue;
 
             $savedDays = [];
             $neededDays = [];
-            $year = intval(substr($foundDays[0], 0, 4));
 
             $savedTirage = $this->tirageRepository->findByYear($year);
 
@@ -157,12 +175,11 @@ class FormValuesFinder
                 $savedDays[] = $tirage->getJour()->format('Ymd');
 
             foreach ($foundDays as $day) {
-                if(!in_array($day, $savedDays)) {
+                if (!in_array($day, $savedDays))
                     $neededDays[] = $day;
-                }
             }
 
-            if(0 == count($neededDays))
+            if (0 == count($neededDays))
                 continue;
 
             $newFormValues[$year] = $neededDays;

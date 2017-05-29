@@ -89,12 +89,12 @@ class Tirage
     private $jokerPlus;
 
     /**
-     * @ORM\OneToOne(targetEntity="MyMillion", mappedBy="tirage")
+     * @ORM\OneToMany(targetEntity="MyMillion", mappedBy="tirage")
      */
     private $myMillion;
 
     /**
-     * @ORM\OneToOne(targetEntity="Statistique", mappedBy="tirage")
+     * @ORM\OneToMany(targetEntity="Statistique", mappedBy="tirage")
      */
     private $statistique;
 
@@ -104,6 +104,8 @@ class Tirage
     public function __construct()
     {
         $this->gagnants = new ArrayCollection();
+        $this->myMillion = new ArrayCollection();
+        $this->statistique = new ArrayCollection();
     }
 
     /**
@@ -341,7 +343,7 @@ class Tirage
     }
 
     /**
-     * @return MyMillion|null
+     * @return ArrayCollection $myMillion
      */
     public function getMyMillion()
     {
@@ -354,6 +356,22 @@ class Tirage
     public function setMyMillion($myMillion)
     {
         $this->myMillion = $myMillion;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getStatistique()
+    {
+        return $this->statistique;
+    }
+
+    /**
+     * @param ArrayCollection $statistique
+     */
+    public function setStatistique($statistique)
+    {
+        $this->statistique = $statistique;
     }
 
 

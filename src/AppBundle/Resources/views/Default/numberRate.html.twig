@@ -1,6 +1,7 @@
 {% extends '::base.html.twig' %}
 
 {% block content %}
+    {% include '@App/Default/partial/probabilities.html.twig' %}
     <canvas id="chartNumberRate" width="200" height="100"></canvas>
     <div style="text-align: center">
         <a download="exportNumberRate.png">

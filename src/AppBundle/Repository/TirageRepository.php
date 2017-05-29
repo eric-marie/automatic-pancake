@@ -42,19 +42,19 @@ class TirageRepository extends EntityRepository
         $emConfig = $this->getEntityManager()->getConfiguration();
         $emConfig->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
 
-        $dql = <<<DQL
-SELECT t 
-FROM AppBundle:Tirage t
-WHERE YEAR(t.jour) = :year
-ORDER BY t.jour ASC
-DQL;
-        return $this
-            ->getEntityManager()
-            ->createQuery($dql)
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('t, jp')
+            ->from('AppBundle:Tirage', 't')
+            ->leftJoin('t.jokerPlus', 'jp')
+            ->where('YEAR(t.jour) = :year')
+            ->orderBy('t.jour', 'ASC')
             ->setParameters([
                 'year' => $year
-            ])
-            ->getResult();
+            ]);
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
     }
 
     /**
@@ -143,6 +143,40 @@ ORDER BY
   occurrence DESC,
   boule ASC
 SQL;
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    public function getStarsBestFriendsOrder()
+    {
+        $sql = '';
+        for($starNumber = 1 ; $starNumber <= 12 ; $starNumber++) {
+            $sql .= $starNumber > 1 ? ' UNION (' : '(';
+            $sql .= <<<SQL
+SELECT
+  etoile,
+  duo,
+  COUNT(duo) AS occurrence
+FROM (
+       SELECT
+         etoile1 AS etoile,
+         etoile2 AS duo
+       FROM tirage
+       WHERE etoile1 = $starNumber
+       UNION ALL
+       SELECT
+         etoile2 AS etoile,
+         etoile1 AS duo
+       FROM tirage
+       WHERE etoile2 = $starNumber
+     ) AS union_table
+GROUP BY duo
+SQL;
+            $sql .= ')';
+        }
 
         $statement = $this->getEntityManager()->getConnection()->prepare($sql);
         $statement->execute();

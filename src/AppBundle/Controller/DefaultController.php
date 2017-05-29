@@ -42,7 +42,7 @@ class DefaultController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $formValueFinder = new FormValuesFinder($em->getRepository('AppBundle:Tirage'));
+        $formValueFinder = new FormValuesFinder($em->getRepository('AppBundle:Tirage'), $this->get('kernel')->getCacheDir());
         $formValues = $formValueFinder->getFormValues();
 
         $count = 0;
@@ -155,6 +155,26 @@ class DefaultController extends Controller
 
         return [
             'starsOrder' => $starsOrder,
+            'totalCount' => $totalCount,
+            'totalCountBefore12Star' => $totalCountBefore12Star
+        ];
+    }
+
+    /**
+     * @Route("star-best-friends/", name="star-best-friends")
+     * @Template()
+     */
+    public function starBestFriendsAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var TirageRepository $tirageRepository */
+        $tirageRepository = $em->getRepository('AppBundle:Tirage');
+        $starsBestFriendsOrder = $tirageRepository->getStarsBestFriendsOrder();
+        $totalCount = $tirageRepository->getTotalCount();
+        $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
+
+        return [
+            'starsBestFriendsOrder' => $starsBestFriendsOrder,
             'totalCount' => $totalCount,
             'totalCountBefore12Star' => $totalCountBefore12Star
         ];
