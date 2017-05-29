@@ -1,0 +1,57 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="alert alert-info">
+        {% set calc12 = (starsOrder[11]['occurrence'] / (totalCount - totalCountBefore12Star) * totalCount)|round %}
+        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en avait que 11.<br>
+        Un pro-rata est donc effectué sur l'étoile 12 pour pouvoir la comparer aux 11 autres.<br>
+        La vraie fréquence d'apparition est de {{ starsOrder[11]['occurrence'] }} en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la valeur calculée {{ calc12 }}
+    </div>
+    <canvas id="chartStarRate" width="200" height="100"></canvas>
+    <div style="text-align: center">
+        <a download="exportStarRate.png">
+            Exporter le graphique en PNG
+        </a>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        $(function () {
+            var $chartStarRate = $('#chartStarRate');
+
+            var options = {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                animation: {
+                    duration: 400,
+                    onComplete: function (animation) {
+                        $('a', $(this.chart.canvas).next()).attr('href', this.toBase64Image());
+                    }
+                }
+            };
+
+
+            var chartBreakdownsCounts = new Chart($chartStarRate, {
+                type: 'bar',
+                data: {
+                    labels: [{% for star in starsOrder %}
+                        '{{ star['etoile'] }}'{{ not loop.last ? ', ' }}
+                        {% endfor %}],
+                    datasets: [{
+                        label: 'Fréquence d\'apparition des étoiles',
+                        data: [{% for star in starsOrder %}
+                            '{{ star['etoile'] == 12 ? calc12 : star['occurrence'] }}'{{ not loop.last ? ', ' }}
+                            {% endfor %}],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255,99,132,1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: options
+            });
+        });
+    </script>
+{% endblock %}

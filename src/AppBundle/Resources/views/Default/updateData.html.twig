@@ -1,6 +1,16 @@
 {% extends '::base.html.twig' %}
 
-{% block body %}
-    <a href="{{ path('homepage') }}">Retour</a>
+{% block content %}
     <p>Mise à jour effectuée</p>
+    {% if countMaxReached %}
+        <p>
+            Le max de mises à jour {{ countMax }} a été atteint pendant cette mise à jour.<br/>
+            <a href="{{ path('update-data') }}">Relancer une mise à jour</a> (automatique dans 2 secondes).
+        </p>
+        <script type="text/javascript">
+            setTimeout(function () {
+                window.location.reload(true);
+            }, 2000);
+        </script>
+    {% endif %}
 {% endblock %}

@@ -26,13 +26,9 @@ class DefaultController extends Controller
         /** @var TirageRepository $tirageRepository */
         $tirageRepository = $em->getRepository('AppBundle:Tirage');
         $totalCount = $tirageRepository->getTotalCount();
-        $numbersOrder = $tirageRepository->getNumbersOrder();
-        $numbersBestFriendsOrder = $tirageRepository->getNumbersBestFriendsOrder([50]);
 
         return [
-            'totalCount' => $totalCount,
-            'numbersOrder' => $numbersOrder,
-            'numbersBestFriendsOrder' => $numbersBestFriendsOrder
+            'totalCount' => $totalCount
         ];
     }
 
@@ -50,10 +46,14 @@ class DefaultController extends Controller
         $formValues = $formValueFinder->getFormValues();
 
         $count = 0;
+        $countMax = 30;
         foreach ($formValues as $year => $days) {
             foreach ($days as $day) {
-                if($count >= 30)
-                    return $this->redirectToRoute('update-data');
+                if ($count >= $countMax)
+                    return [
+                        'countMaxReached' => true,
+                        'countMax' => $countMax
+                    ];
 
                 $resultPage = new ResultPage($year, $day);
                 $newTirage = new Tirage();
@@ -116,6 +116,47 @@ class DefaultController extends Controller
             }
         }
 
-        return [];
+        return [
+            'countMaxReached' => false,
+            'countMax' => $countMax
+        ];
+    }
+
+    /**
+     * @Route("/number-rate/", name="number-rate")
+     * @Template()
+     */
+    public function numberRateAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var TirageRepository $tirageRepository */
+        $tirageRepository = $em->getRepository('AppBundle:Tirage');
+        $numbersOrder = $tirageRepository->getNumbersOrder();
+        $numbersBestFriendsOrder = $tirageRepository->getNumbersBestFriendsOrder([50]);
+
+        return [
+            'numbersOrder' => $numbersOrder,
+            'numbersBestFriendsOrder' => $numbersBestFriendsOrder
+        ];
+    }
+
+    /**
+     * @Route("/star-rate/", name="star-rate")
+     * @Template()
+     */
+    public function starRateAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var TirageRepository $tirageRepository */
+        $tirageRepository = $em->getRepository('AppBundle:Tirage');
+        $starsOrder = $tirageRepository->getStarsOrder();
+        $totalCount = $tirageRepository->getTotalCount();
+        $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
+
+        return [
+            'starsOrder' => $starsOrder,
+            'totalCount' => $totalCount,
+            'totalCountBefore12Star' => $totalCountBefore12Star
+        ];
     }
 }

@@ -22,6 +22,18 @@ class TirageRepository extends EntityRepository
     }
 
     /**
+     * @return int
+     */
+    public function getTotalCountBefore12Star()
+    {
+        return $this->createQueryBuilder('tirage')
+            ->select('COUNT(tirage)')
+            ->where('tirage.jour < \'2016-09-24\'')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * @param int $year
      * @return array
      */
@@ -63,8 +75,31 @@ FROM (
 ) AS union_table
 GROUP BY boule
 ORDER BY 
-  occurrence DESC,
   boule ASC
+SQL;
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    /**
+     * @return array
+     */
+    public function getStarsOrder()
+    {
+        $sql = <<<SQL
+SELECT 
+  etoile,
+  COUNT(etoile) AS occurrence
+FROM (
+  SELECT etoile1 AS etoile FROM tirage UNION ALL
+  SELECT etoile2 AS etoile FROM tirage
+) AS union_table
+GROUP BY etoile
+ORDER BY 
+  etoile ASC
 SQL;
 
         $statement = $this->getEntityManager()->getConnection()->prepare($sql);
