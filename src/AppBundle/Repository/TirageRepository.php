@@ -109,40 +109,37 @@ SQL;
     }
 
     /**
-     * @param array $numbers
      * @return array
      */
-    public function getNumbersBestFriendsOrder($numbers = [])
+    public function getNumbersBestFriendsOrder()
     {
-        if (0 == count($numbers)) return [];
+        $sql = '';
+        for ($number1 = 1; $number1 <= 5; $number1++) {
+            for ($number2 = 1; $number2 <= 5; $number2++) {
+                if($number1 == $number2)
+                    continue;
 
-        $whereClauseUnion = '';
-        foreach ($numbers as $number) {
-            if (!is_numeric($number)) return [];
-
-            $whereClauseUnion .= '' == $whereClauseUnion ? 'WHERE ' : ' AND ';
-            $whereClauseUnion .= $number . ' IN (boule1, boule2, boule3, boule4, boule5)';
-        }
-        $whereClauseAll = implode(', ', $numbers);
-
-        $sql = <<<SQL
-SELECT 
-  boule,
-  COUNT(boule) AS occurrence
-FROM (
-  SELECT boule1 AS boule FROM tirage $whereClauseUnion UNION ALL
-  SELECT boule2 AS boule FROM tirage $whereClauseUnion UNION ALL
-  SELECT boule3 AS boule FROM tirage $whereClauseUnion UNION ALL
-  SELECT boule4 AS boule FROM tirage $whereClauseUnion UNION ALL
-  SELECT boule5 AS boule FROM tirage $whereClauseUnion
-) AS union_table
-WHERE
-  boule NOT IN ($whereClauseAll)
-GROUP BY boule
-ORDER BY 
-  occurrence DESC,
-  boule ASC
+                $sql .= strlen($sql) > 1 ? ' UNION ' : '';
+                $sql .= <<<SQL
+(
+  SELECT
+  boule$number1 AS boule,
+  boule$number2 AS duo,
+  COUNT(*) AS occurrence
+FROM tirage
+GROUP BY
+  boule$number1,
+  boule$number2
+)
 SQL;
+            }
+        }
+
+        $sql .= <<<SQLINVALID
+ORDER BY
+  boule ASC,
+  duo ASC
+SQLINVALID;
 
         $statement = $this->getEntityManager()->getConnection()->prepare($sql);
         $statement->execute();
@@ -150,33 +147,37 @@ SQL;
         return $statement->fetchAll();
     }
 
+    /**
+     * @return array
+     */
     public function getStarsBestFriendsOrder()
     {
-        $sql = '';
-        for($starNumber = 1 ; $starNumber <= 12 ; $starNumber++) {
-            $sql .= $starNumber > 1 ? ' UNION (' : '(';
-            $sql .= <<<SQL
-SELECT
-  etoile,
-  duo,
-  COUNT(duo) AS occurrence
-FROM (
-       SELECT
-         etoile1 AS etoile,
-         etoile2 AS duo
-       FROM tirage
-       WHERE etoile1 = $starNumber
-       UNION ALL
-       SELECT
-         etoile2 AS etoile,
-         etoile1 AS duo
-       FROM tirage
-       WHERE etoile2 = $starNumber
-     ) AS union_table
-GROUP BY duo
+        $sql = <<<SQL
+(
+  SELECT
+  etoile1 AS etoile,
+  etoile2 AS duo,
+  COUNT(*) AS occurrence
+FROM tirage
+GROUP BY
+  etoile1,
+  etoile2
+)
+UNION
+(
+  SELECT
+    etoile2 AS etoile,
+    etoile1 AS duo,
+   COUNT(*) AS occurrence
+ FROM tirage
+ GROUP BY
+   etoile2,
+   etoile1
+)
+ORDER BY
+  etoile ASC,
+  duo ASC
 SQL;
-            $sql .= ')';
-        }
 
         $statement = $this->getEntityManager()->getConnection()->prepare($sql);
         $statement->execute();
