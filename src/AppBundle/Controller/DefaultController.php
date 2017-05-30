@@ -153,6 +153,7 @@ class DefaultController extends Controller
         $starsBestFriendsOrder = $tirageRepository->getStarsBestFriendsOrder();
         $totalCount = $tirageRepository->getTotalCount();
         $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
+        $top5 = $this->_getTop5($starsOrder, $totalCount);
         $top5BestFriends = $this->_getTop5BestFriends($starsBestFriendsOrder, $totalCount);
 
         return [
@@ -160,18 +161,54 @@ class DefaultController extends Controller
             'starsBestFriendsOrder' => $starsBestFriendsOrder,
             'totalCount' => $totalCount,
             'totalCountBefore12Star' => $totalCountBefore12Star,
+            'top5' => $top5,
             'top5BestFriends' => $top5BestFriends
         ];
     }
 
     /**
-     * @param $starsBestFriendsOrder
-     * @param $totalCount
+     * @param array $starsOrder
+     * @param int $totalCount
+     * @return array
+     */
+    private function _getTop5($starsOrder, $totalCount)
+    {
+        $top5 = [];
+
+        foreach ($starsOrder as $stat) {
+            if (count($top5) < 5) {
+                $top5[] = $stat;
+                continue;
+            }
+
+            $weakestOccurrence = $totalCount + 1;
+            $weakestIndex = 0;
+            for ($i = 0; $i < 5; $i++) {
+                if ($weakestOccurrence > $top5[$i]['occurrence']) {
+                    $weakestOccurrence = $top5[$i]['occurrence'];
+                    $weakestIndex = $i;
+                }
+            }
+
+            if ($stat['occurrence'] > $weakestOccurrence) {
+                $top5[$weakestIndex] = $stat;
+            }
+        }
+
+        usort($top5, [self::class, '_callbackSortTop5']);
+
+        return $top5;
+    }
+
+    /**
+     * @param array $starsBestFriendsOrder
+     * @param int $totalCount
      * @return array
      */
     private function _getTop5BestFriends($starsBestFriendsOrder, $totalCount)
     {
         $top5BestFriends = [];
+
         foreach ($starsBestFriendsOrder as $stat) {
             $newStat = $stat;
             if ($stat['etoile'] > $stat['duo']) {
@@ -200,7 +237,7 @@ class DefaultController extends Controller
             }
         }
 
-        usort($top5BestFriends, [self::class, '_callbackSortTop5BestFriends']);
+        usort($top5BestFriends, [self::class, '_callbackSortTop5']);
 
         return $top5BestFriends;
     }
@@ -210,7 +247,7 @@ class DefaultController extends Controller
      * @param $b
      * @return int
      */
-    private static function _callbackSortTop5BestFriends($a, $b)
+    private static function _callbackSortTop5($a, $b)
     {
         if ($a['occurrence'] > $b['occurrence'])
             return -1;

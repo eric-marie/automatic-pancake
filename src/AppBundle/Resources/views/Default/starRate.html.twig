@@ -6,6 +6,35 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
+                    <a href="#top-5" data-toggle="collapse" data-parent="#accordion">
+                        Fréquence d'apparition des étoiles : top 5
+                    </a>
+                </h4>
+            </div>
+            <div class="collapse panel-collapse" id="top-5">
+                <div class="panel-body">
+                    <table class="table">
+                        <tbody>
+                        {% for stat in top5 %}
+                            <tr>
+                                <td>{{ stat['etoile'] }}</td>
+                                <td>{{ stat['occurrence'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>Etoile</th>
+                            <th>Occurrence</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
                     <a href="#number-by-number" data-toggle="collapse" data-parent="#accordion">
                         Fréquence d'apparition des étoiles : numéro par numéro
                     </a>
@@ -15,11 +44,13 @@
                 <div class="panel-body">
                     <div class="alert alert-info">
                         {% set calc12 = (starsOrder[11]['occurrence'] / (totalCount - totalCountBefore12Star) * totalCount)|round %}
-                        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en avait que
+                        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en
+                        avait que
                         11.<br>
                         Un pro-rata est donc effectué sur l'étoile 12 pour pouvoir la comparer aux 11 autres.<br>
                         La vraie fréquence d'apparition est de {{ starsOrder[11]['occurrence'] }}
-                        en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la valeur
+                        en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la
+                        valeur
                         calculée {{ calc12 }}
                     </div>
                     <canvas id="chartStarRate" width="200" height="100"></canvas>
