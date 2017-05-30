@@ -2,51 +2,95 @@
 
 {% block content %}
     {% include '@App/Default/partial/probabilities.html.twig' %}
-    <canvas id="chartNumberRate" width="200" height="100"></canvas>
-    <div style="text-align: center">
-        <a download="exportNumberRate.png">
-            Exporter le graphique en PNG
-        </a>
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a href="#top-10" data-toggle="collapse" data-parent="#accordion">
+                        Fréquence d'apparition des numéros : top 10
+                    </a>
+                </h4>
+            </div>
+            <div class="collapse panel-collapse in" id="top-10">
+                <div class="panel-body">
+                    <table class="table">
+                        <tbody>
+                        {% for stat in top10 %}
+                            <tr>
+                                <td>{{ stat['boule'] }}</td>
+                                <td>{{ stat['occurrence'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Occurrence</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a href="#number-by-number" data-toggle="collapse" data-parent="#accordion">
+                        Fréquence d'apparition des numéros : numéro par numéro
+                    </a>
+                </h4>
+            </div>
+            <div class="collapse panel-collapse" id="number-by-number">
+                <div class="panel-body">
+                    <canvas id="chartNumberRate" width="200" height="100"></canvas>
+                    <div style="text-align: center">
+                        <a download="exportNumberRate.png">
+                            Exporter le graphique en PNG
+                        </a>
+                    </div>
+                    <script type="text/javascript" charset="utf-8">
+                        $(function () {
+                            var $chartNumberRate = $('#chartNumberRate');
+
+                            var options = {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                },
+                                animation: {
+                                    duration: 400,
+                                    onComplete: function (animation) {
+                                        $('a', $(this.chart.canvas).next()).attr('href', this.toBase64Image());
+                                    }
+                                }
+                            };
+
+
+                            var chartBreakdownsCounts = new Chart($chartNumberRate, {
+                                type: 'bar',
+                                data: {
+                                    labels: [{% for number in numbersOrder %}
+                                        '{{ number['boule'] }}'{{ not loop.last ? ', ' }}
+                                        {% endfor %}],
+                                    datasets: [{
+                                        label: 'Fréquence d\'apparition des numéros',
+                                        data: [{% for number in numbersOrder %}
+                                            '{{ number['occurrence'] }}'{{ not loop.last ? ', ' }}
+                                            {% endfor %}],
+                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                        borderColor: 'rgba(255,99,132,1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: options
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
     </div>
-    <script type="text/javascript" charset="utf-8">
-        $(function () {
-            var $chartNumberRate = $('#chartNumberRate');
-
-            var options = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                },
-                animation: {
-                    duration: 400,
-                    onComplete: function (animation) {
-                        $('a', $(this.chart.canvas).next()).attr('href', this.toBase64Image());
-                    }
-                }
-            };
-
-
-            var chartBreakdownsCounts = new Chart($chartNumberRate, {
-                type: 'bar',
-                data: {
-                    labels: [{% for number in numbersOrder %}
-                        '{{ number['boule'] }}'{{ not loop.last ? ', ' }}
-                        {% endfor %}],
-                    datasets: [{
-                        label: 'Fréquence d\'apparition des numéros',
-                        data: [{% for number in numbersOrder %}
-                            '{{ number['occurrence'] }}'{{ not loop.last ? ', ' }}
-                            {% endfor %}],
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255,99,132,1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: options
-            });
-        });
-    </script>
 {% endblock %}

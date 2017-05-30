@@ -132,11 +132,12 @@ class DefaultController extends Controller
         /** @var TirageRepository $tirageRepository */
         $tirageRepository = $em->getRepository('AppBundle:Tirage');
         $numbersOrder = $tirageRepository->getNumbersOrder();
-        $numbersBestFriendsOrder = $tirageRepository->getNumbersBestFriendsOrder([50]);
+        $totalCount = $tirageRepository->getTotalCount();
+        $top10 = $this->_getTop($numbersOrder, $totalCount, 10);
 
         return [
             'numbersOrder' => $numbersOrder,
-            'numbersBestFriendsOrder' => $numbersBestFriendsOrder
+            'top10' => $top10
         ];
     }
 
@@ -153,8 +154,8 @@ class DefaultController extends Controller
         $starsBestFriendsOrder = $tirageRepository->getStarsBestFriendsOrder();
         $totalCount = $tirageRepository->getTotalCount();
         $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
-        $top5 = $this->_getTop5($starsOrder, $totalCount);
-        $top5BestFriends = $this->_getTop5BestFriends($starsBestFriendsOrder, $totalCount);
+        $top5 = $this->_getTop($starsOrder, $totalCount);
+        $top5BestFriends = $this->_getTopBestFriends('etoile', $starsBestFriendsOrder, $totalCount);
 
         return [
             'starsOrder' => $starsOrder,
@@ -167,79 +168,82 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param array $starsOrder
+     * @param array $order
      * @param int $totalCount
+     * @param int $count
      * @return array
      */
-    private function _getTop5($starsOrder, $totalCount)
+    private function _getTop($order, $totalCount, $count = 5)
     {
-        $top5 = [];
+        $top = [];
 
-        foreach ($starsOrder as $stat) {
-            if (count($top5) < 5) {
-                $top5[] = $stat;
+        foreach ($order as $stat) {
+            if (count($top) < $count) {
+                $top[] = $stat;
                 continue;
             }
 
             $weakestOccurrence = $totalCount + 1;
             $weakestIndex = 0;
-            for ($i = 0; $i < 5; $i++) {
-                if ($weakestOccurrence > $top5[$i]['occurrence']) {
-                    $weakestOccurrence = $top5[$i]['occurrence'];
+            for ($i = 0; $i < $count; $i++) {
+                if ($weakestOccurrence > $top[$i]['occurrence']) {
+                    $weakestOccurrence = $top[$i]['occurrence'];
                     $weakestIndex = $i;
                 }
             }
 
             if ($stat['occurrence'] > $weakestOccurrence) {
-                $top5[$weakestIndex] = $stat;
+                $top[$weakestIndex] = $stat;
             }
         }
 
-        usort($top5, [self::class, '_callbackSortTop5']);
+        usort($top, [self::class, '_callbackSortTop']);
 
-        return $top5;
+        return $top;
     }
 
     /**
-     * @param array $starsBestFriendsOrder
+     * @param string $type
+     * @param $BestFriendsOrder
      * @param int $totalCount
+     * @param int $count
      * @return array
      */
-    private function _getTop5BestFriends($starsBestFriendsOrder, $totalCount)
+    private function _getTopBestFriends($type, $BestFriendsOrder, $totalCount, $count = 5)
     {
-        $top5BestFriends = [];
+        $topBestFriends = [];
 
-        foreach ($starsBestFriendsOrder as $stat) {
+        foreach ($BestFriendsOrder as $stat) {
             $newStat = $stat;
-            if ($stat['etoile'] > $stat['duo']) {
-                $newStat['etoile'] = $stat['duo'];
-                $newStat['duo'] = $stat['etoile'];
+            if ($stat[$type] > $stat['duo']) {
+                $newStat[$type] = $stat['duo'];
+                $newStat['duo'] = $stat[$type];
             }
 
-            if (count($top5BestFriends) < 5) {
-                $top5BestFriends[] = $newStat;
+            if (count($topBestFriends) < $count) {
+                $topBestFriends[] = $newStat;
                 continue;
             }
 
             $weakestOccurrence = $totalCount + 1;
             $weakestIndex = 0;
-            for ($i = 0; $i < 5; $i++) {
-                if ($newStat['etoile'] == $top5BestFriends[$i]['etoile'] && $newStat['duo'] == $top5BestFriends[$i]['duo'])
+            for ($i = 0; $i < $count; $i++) {
+                if ($newStat[$type] == $topBestFriends[$i][$type] && $newStat['duo'] == $topBestFriends[$i]['duo'])
                     continue 2;
-                if ($weakestOccurrence > $top5BestFriends[$i]['occurrence']) {
-                    $weakestOccurrence = $top5BestFriends[$i]['occurrence'];
+                if ($weakestOccurrence > $topBestFriends[$i]['occurrence']) {
+                    $weakestOccurrence = $topBestFriends[$i]['occurrence'];
                     $weakestIndex = $i;
                 }
             }
 
             if ($newStat['occurrence'] > $weakestOccurrence) {
-                $top5BestFriends[$weakestIndex] = $newStat;
+                $topBestFriends[$weakestIndex] = $newStat;
             }
         }
 
-        usort($top5BestFriends, [self::class, '_callbackSortTop5']);
+        usort($topBestFriends, [self::class, '_callbackSortTop']);
 
-        return $top5BestFriends;
+        return $topBestFriends;
     }
 
     /**
@@ -247,7 +251,7 @@ class DefaultController extends Controller
      * @param $b
      * @return int
      */
-    private static function _callbackSortTop5($a, $b)
+    private static function _callbackSortTop($a, $b)
     {
         if ($a['occurrence'] > $b['occurrence'])
             return -1;
