@@ -4,9 +4,12 @@
     {% include '@App/Default/partial/probabilities.html.twig' %}
     <div class="alert alert-info">
         {% set calc12 = (starsOrder[11]['occurrence'] / (totalCount - totalCountBefore12Star) * totalCount)|round %}
-        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en avait que 11.<br>
+        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en avait que
+        11.<br>
         Un pro-rata est donc effectué sur l'étoile 12 pour pouvoir la comparer aux 11 autres.<br>
-        La vraie fréquence d'apparition est de {{ starsOrder[11]['occurrence'] }} en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la valeur calculée {{ calc12 }}
+        La vraie fréquence d'apparition est de {{ starsOrder[11]['occurrence'] }}
+        en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la valeur
+        calculée {{ calc12 }}
     </div>
     <canvas id="chartStarRate" width="200" height="100"></canvas>
     <div style="text-align: center">

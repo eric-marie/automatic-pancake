@@ -1,20 +1,16 @@
 <div class="alert alert-info">
-    Les combinaisons contiennent {{ constant('AppBundle\\Twig\\AppExtension::NUMBER_COUNT') }} numéros à choisir
-    parmi {{ constant('AppBundle\\Twig\\AppExtension::NUMBER_MAX') }} numéros, soit
-    C<sup>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_MAX') }}</sub>.<br/>
-    Egalement, nous avons les combinaisons possibles avec les étoiles. Elles sont composées
-    de {{ constant('AppBundle\\Twig\\AppExtension::STAR_COUNT') }} numéros à choisir
-    parmi {{ constant('AppBundle\\Twig\\AppExtension::STAR_MAX') }}, soit
-    C<sup>{{ constant('AppBundle\\Twig\\AppExtension::STAR_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::STAR_MAX') }}</sub>.<br/>
-    Par conséquent, nous posons :
-    C<sup>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_MAX') }}</sub>
-    x
-    C<sup>{{ constant('AppBundle\\Twig\\AppExtension::STAR_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::STAR_MAX') }}</sub><br/>
-    <br/>
-    Ce qui donne :<br/>
-    {{ probabilityFormula() }}<br/>
-    <br/>
-    Nous obtenons ainsi :<br/>
-    {{ probabilityBall()|number_format(0, ',', ' ') }} x {{ probabilityStar()|number_format(0, ',', ' ') }}
-    = {{ probabilityEuroMillion()|number_format(0, ',', ' ') }} combinaisons.
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#probabilitiesCollapse">
+        Voir les probabilités
+    </button>
+    <div class="collapse" id="probabilitiesCollapse">
+        Les combinaisons contiennent {{ constant('AppBundle\\Twig\\AppExtension::NUMBER_COUNT') }} numéros à choisir parmi {{ constant('AppBundle\\Twig\\AppExtension::NUMBER_MAX') }} numéros, soit C<sup>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_MAX') }}</sub>.<br/>
+        Egalement, nous avons les combinaisons possibles avec les étoiles. Elles sont composées de {{ constant('AppBundle\\Twig\\AppExtension::STAR_COUNT') }} numéros à choisir parmi {{ constant('AppBundle\\Twig\\AppExtension::STAR_MAX') }}, soit C<sup>{{ constant('AppBundle\\Twig\\AppExtension::STAR_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::STAR_MAX') }}</sub>.<br/>
+        Par conséquent, nous posons : C<sup>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::NUMBER_MAX') }}</sub> x C<sup>{{ constant('AppBundle\\Twig\\AppExtension::STAR_COUNT') }}</sup><sub>{{ constant('AppBundle\\Twig\\AppExtension::STAR_MAX') }}</sub><br/>
+        <br/>
+        Ce qui donne :<br/>
+        {{ probabilityFormula() }}<br/>
+        <br/>
+        Nous obtenons ainsi :<br/>
+        {{ probabilityBall()|number_format(0, ',', ' ') }} x {{ probabilityStar()|number_format(0, ',', ' ') }} = {{ probabilityEuroMillion()|number_format(0, ',', ' ') }} combinaisons.
+    </div>
 </div>

@@ -173,10 +173,58 @@ class DefaultController extends Controller
         $totalCount = $tirageRepository->getTotalCount();
         $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
 
+        $top5BestFriends = [];
+        foreach ($starsBestFriendsOrder as $stat) {
+            $newStat = $stat;
+            if ($stat['etoile'] > $stat['duo']) {
+                $newStat['etoile'] = $stat['duo'];
+                $newStat['duo'] = $stat['etoile'];
+            }
+
+            if (count($top5BestFriends) < 5) {
+                $top5BestFriends[] = $newStat;
+                continue;
+            }
+
+            $weakestOccurrence = $totalCount + 1;
+            $weakestIndex = 0;
+            for ($i = 0; $i < 5; $i++) {
+                if ($newStat['etoile'] == $top5BestFriends[$i]['etoile'] && $newStat['duo'] == $top5BestFriends[$i]['duo'])
+                    continue 2;
+                if ($weakestOccurrence > $top5BestFriends[$i]['occurrence']) {
+                    $weakestOccurrence = $top5BestFriends[$i]['occurrence'];
+                    $weakestIndex = $i;
+                }
+            }
+
+            if ($newStat['occurrence'] > $weakestOccurrence) {
+                $top5BestFriends[$weakestIndex] = $newStat;
+            }
+        }
+
+        usort($top5BestFriends, [self::class, '_callbackSortTop5BestFriends']);
+
         return [
             'starsBestFriendsOrder' => $starsBestFriendsOrder,
             'totalCount' => $totalCount,
-            'totalCountBefore12Star' => $totalCountBefore12Star
+            'totalCountBefore12Star' => $totalCountBefore12Star,
+            'top5BestFriends' => $top5BestFriends
         ];
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     * @return int
+     */
+    private static function _callbackSortTop5BestFriends($a, $b)
+    {
+        if ($a['occurrence'] > $b['occurrence'])
+            return -1;
+
+        if ($a['occurrence'] < $b['occurrence'])
+            return 1;
+
+        return 0;
     }
 }
