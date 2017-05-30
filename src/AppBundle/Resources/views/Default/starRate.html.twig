@@ -2,60 +2,182 @@
 
 {% block content %}
     {% include '@App/Default/partial/probabilities.html.twig' %}
-    <div class="alert alert-info">
-        {% set calc12 = (starsOrder[11]['occurrence'] / (totalCount - totalCountBefore12Star) * totalCount)|round %}
-        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en avait que
-        11.<br>
-        Un pro-rata est donc effectué sur l'étoile 12 pour pouvoir la comparer aux 11 autres.<br>
-        La vraie fréquence d'apparition est de {{ starsOrder[11]['occurrence'] }}
-        en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la valeur
-        calculée {{ calc12 }}
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a href="#number-by-number" data-toggle="collapse" data-parent="#accordion">
+                        Fréquence d'apparition des étoiles : numéro par numéro
+                    </a>
+                </h4>
+            </div>
+            <div class="collapse panel-collapse" id="number-by-number">
+                <div class="panel-body">
+                    <div class="alert alert-info">
+                        {% set calc12 = (starsOrder[11]['occurrence'] / (totalCount - totalCountBefore12Star) * totalCount)|round %}
+                        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en avait que
+                        11.<br>
+                        Un pro-rata est donc effectué sur l'étoile 12 pour pouvoir la comparer aux 11 autres.<br>
+                        La vraie fréquence d'apparition est de {{ starsOrder[11]['occurrence'] }}
+                        en {{ totalCount - totalCountBefore12Star }} tirages sur un total de {{ totalCount }} et la valeur
+                        calculée {{ calc12 }}
+                    </div>
+                    <canvas id="chartStarRate" width="200" height="100"></canvas>
+                    <div style="text-align: center">
+                        <a download="exportStarRate.png">
+                            Exporter le graphique en PNG
+                        </a>
+                    </div>
+                    <script type="text/javascript" charset="utf-8">
+                        $(function () {
+                            var $chartStarRate = $('#chartStarRate');
+
+                            var options = {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                },
+                                animation: {
+                                    duration: 400,
+                                    onComplete: function (animation) {
+                                        $('a', $(this.chart.canvas).next()).attr('href', this.toBase64Image());
+                                    }
+                                }
+                            };
+
+
+                            var chartBreakdownsCounts = new Chart($chartStarRate, {
+                                type: 'bar',
+                                data: {
+                                    labels: [{% for star in starsOrder %}
+                                        '{{ star['etoile'] }}'{{ not loop.last ? ', ' }}
+                                        {% endfor %}],
+                                    datasets: [{
+                                        label: 'Fréquence d\'apparition des étoiles',
+                                        data: [{% for star in starsOrder %}
+                                            '{{ star['etoile'] == 12 ? calc12 : star['occurrence'] }}'{{ not loop.last ? ', ' }}
+                                            {% endfor %}],
+                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                        borderColor: 'rgba(255,99,132,1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: options
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a href="#top-5-duo" data-toggle="collapse" data-parent="#accordion">
+                        Fréquence d'apparition des étoiles en duo : 5 meilleurs duos
+                    </a>
+                </h4>
+            </div>
+            <div class="collapse panel-collapse in" id="top-5-duo">
+                <div class="panel-body">
+                    <table class="table">
+                        <tbody>
+                        {% for stat in top5BestFriends %}
+                            <tr>
+                                <td>{{ stat['etoile'] }}</td>
+                                <td>{{ stat['duo'] }}</td>
+                                <td>{{ stat['occurrence'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th>Etoile</th>
+                            <th>Duo</th>
+                            <th>Occurrence</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a href="#number-by-number-duo" data-toggle="collapse" data-parent="#accordion">
+                        Fréquence d'apparition des étoiles en duo : numéro par numéro
+                    </a>
+                </h4>
+            </div>
+            <div class="collapse panel-collapse" id="number-by-number-duo">
+                <div class="panel-body">
+                    <div class="alert alert-info">
+                        {% set calc12Factor = 1 / (totalCount - totalCountBefore12Star) * totalCount %}
+                        Attention, au tirage du 24 septembre 2016 une 12ème étoile a été ajoutée. Avant cela, il n'y en
+                        avait que 11.<br>
+                        Un pro-rata est donc effectué sur l'étoile 12 pour pouvoir la comparer aux 11 autres.<br>
+                        La vraie fréquence d'apparition porte sur {{ totalCount - totalCountBefore12Star }} tirages sur
+                        un total de {{ totalCount }}.
+                    </div>
+                    {% for i in 1..constant('AppBundle\\Twig\\AppExtension::STAR_MAX') %}
+                        <h4 style="text-align: center">Etoile {{ i }}</h4>
+                        <canvas id="charStarBestFriendsOrder-{{ i }}" width="200" height="100"></canvas>
+                        <div style="text-align: center">
+                            <a download="exportStarBestFriendsOrder.png">
+                                Exporter le graphique en PNG
+                            </a>
+                        </div>
+                        {% if not loop.last %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                    <script type="text/javascript" charset="utf-8">
+                        $(function () {
+                            var options = {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                },
+                                animation: {
+                                    duration: 400,
+                                    onComplete: function (animation) {
+                                        $('a', $(this.chart.canvas).next()).attr('href', this.toBase64Image());
+                                    }
+                                }
+                            };
+
+                            {% for i in 1..constant('AppBundle\\Twig\\AppExtension::STAR_MAX') %}
+                            var $charStarBestFriendsOrder{{ i }} = $('#charStarBestFriendsOrder-{{ i }}');
+
+                            var charStarBestFriendsOrder{{ i }} = new Chart($charStarBestFriendsOrder{{ i }}, {
+                                type: 'bar',
+                                data: {
+                                    labels: [{% for number in starsBestFriendsOrder %}{% if number['etoile'] == i %}
+                                        '{{ number['duo'] }}'{{ not loop.last ? ', ' }}
+                                        {% endif %}{% endfor %}],
+                                    datasets: [{
+                                        label: 'Fréquence d\'apparition des étoiles en duo',
+                                        data: [{% for number in starsBestFriendsOrder %}{% if number['etoile'] == i %}
+                                            {% set calculatedOccurence = (number['etoile'] == 12 or number['duo'] == 12 ? number['occurrence'] * calc12Factor : number['occurrence'])|round %}
+                                            '{{ calculatedOccurence }}'{{ not loop.last ? ', ' }}
+                                            {% endif %}{% endfor %}],
+                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                        borderColor: 'rgba(255,99,132,1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: options
+                            });
+                            {% endfor %}
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
     </div>
-    <canvas id="chartStarRate" width="200" height="100"></canvas>
-    <div style="text-align: center">
-        <a download="exportStarRate.png">
-            Exporter le graphique en PNG
-        </a>
-    </div>
-    <script type="text/javascript" charset="utf-8">
-        $(function () {
-            var $chartStarRate = $('#chartStarRate');
-
-            var options = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                },
-                animation: {
-                    duration: 400,
-                    onComplete: function (animation) {
-                        $('a', $(this.chart.canvas).next()).attr('href', this.toBase64Image());
-                    }
-                }
-            };
-
-
-            var chartBreakdownsCounts = new Chart($chartStarRate, {
-                type: 'bar',
-                data: {
-                    labels: [{% for star in starsOrder %}
-                        '{{ star['etoile'] }}'{{ not loop.last ? ', ' }}
-                        {% endfor %}],
-                    datasets: [{
-                        label: 'Fréquence d\'apparition des étoiles',
-                        data: [{% for star in starsOrder %}
-                            '{{ star['etoile'] == 12 ? calc12 : star['occurrence'] }}'{{ not loop.last ? ', ' }}
-                            {% endfor %}],
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255,99,132,1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: options
-            });
-        });
-    </script>
 {% endblock %}

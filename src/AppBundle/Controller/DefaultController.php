@@ -150,29 +150,27 @@ class DefaultController extends Controller
         /** @var TirageRepository $tirageRepository */
         $tirageRepository = $em->getRepository('AppBundle:Tirage');
         $starsOrder = $tirageRepository->getStarsOrder();
+        $starsBestFriendsOrder = $tirageRepository->getStarsBestFriendsOrder();
         $totalCount = $tirageRepository->getTotalCount();
         $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
+        $top5BestFriends = $this->_getTop5BestFriends($starsBestFriendsOrder, $totalCount);
 
         return [
             'starsOrder' => $starsOrder,
+            'starsBestFriendsOrder' => $starsBestFriendsOrder,
             'totalCount' => $totalCount,
-            'totalCountBefore12Star' => $totalCountBefore12Star
+            'totalCountBefore12Star' => $totalCountBefore12Star,
+            'top5BestFriends' => $top5BestFriends
         ];
     }
 
     /**
-     * @Route("star-best-friends/", name="star-best-friends")
-     * @Template()
+     * @param $starsBestFriendsOrder
+     * @param $totalCount
+     * @return array
      */
-    public function starBestFriendsAction()
+    private function _getTop5BestFriends($starsBestFriendsOrder, $totalCount)
     {
-        $em = $this->getDoctrine()->getManager();
-        /** @var TirageRepository $tirageRepository */
-        $tirageRepository = $em->getRepository('AppBundle:Tirage');
-        $starsBestFriendsOrder = $tirageRepository->getStarsBestFriendsOrder();
-        $totalCount = $tirageRepository->getTotalCount();
-        $totalCountBefore12Star = $tirageRepository->getTotalCountBefore12Star();
-
         $top5BestFriends = [];
         foreach ($starsBestFriendsOrder as $stat) {
             $newStat = $stat;
@@ -204,12 +202,7 @@ class DefaultController extends Controller
 
         usort($top5BestFriends, [self::class, '_callbackSortTop5BestFriends']);
 
-        return [
-            'starsBestFriendsOrder' => $starsBestFriendsOrder,
-            'totalCount' => $totalCount,
-            'totalCountBefore12Star' => $totalCountBefore12Star,
-            'top5BestFriends' => $top5BestFriends
-        ];
+        return $top5BestFriends;
     }
 
     /**
