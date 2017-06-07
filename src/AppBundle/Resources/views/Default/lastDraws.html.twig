@@ -23,8 +23,16 @@
     <script type="text/javascript" charset="utf-8">
         $(function () {
             var $lastDraws = $('#last-draws'),
-                $loadMore = $('#load-more');
-            var last10DrawsAfterIdUrl = '{{ url('last-10-draws', {'id' : 0}) }}';
+                $loadMore = $('#load-more'),
+                last10DrawsAfterIdUrl = '{{ url('last-10-draws', {'id' : 0}) }}';
+
+            var formatCurrencyAmount = function (amount) {
+                var formattedAmount = (amount + '').split('').reverse().reduce(function (acc, num, i, orig) {
+                        return num == '-' ? acc : num + (i && !(i % 3) ? ' ' : '') + acc;
+                    }, '') + ' €';
+
+                return '0 €' == formattedAmount ? '-' : formattedAmount;
+            };
 
             var last10DrawsAfterIdAction = function () {
                 var id = $lastDraws.attr('data-last-id');
@@ -36,17 +44,23 @@
                         dateTirage += '/' + ((dateObj.getMonth() + 1) < 10 ? '0' + (dateObj.getMonth() + 1) : (dateObj.getMonth() + 1));
                         dateTirage += '/' + dateObj.getFullYear();
 
-                        var gagnant;
-                        for (var i = 0; i < val.gagnants.lenght; i++) {
-                            if(val.gagnants[i].rang == '1')
-                                gagnant = val.gagnants[i];
+                        var count = '-',
+                            amount = '-';
+                        for (var i = 0; i < val.gagnants.length; i++) {
+                            if (val.gagnants[i].rang == 1) {
+                                if(val.gagnants[i].nombre > 0) {
+                                    count = val.gagnants[i].nombre;
+                                    amount = formatCurrencyAmount(val.gagnants[i].gains);
+                                }
+                                break;
+                            }
                         }
 
                         var newTr = '<tr> \
                         <td>' + dateTirage + '</td> \
                         <td>' + val.boule1 + '-' + val.boule2 + '-' + val.boule3 + '-' + val.boule4 + '-' + val.boule5 + ' / ' + val.etoile1 + '-' + val.etoile2 + '</td> \
-                        <td>' + (typeof gagnant != 'undefined' ? val.gagnants[12].nombre : '0') + '</td> \
-                        <td>' + (typeof gagnant != 'undefined' ? val.gagnants[12].gain : '0') + '</td> \
+                        <td>' + count + '</td> \
+                        <td>' + amount + '</td> \
                     </tr>';
                         $lastDraws.append(newTr);
                         $lastDraws.attr('data-last-id', val.id);
