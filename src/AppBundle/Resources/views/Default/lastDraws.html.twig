@@ -1,0 +1,71 @@
+{% extends '::base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <table class="table">
+                <tbody id="last-draws" data-last-id="0"></tbody>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Tirage</th>
+                    <th>Gagnants</th>
+                    <th>Gain</th>
+                </tr>
+                </thead>
+            </table>
+            <div style="text-align: center">
+                <button id="load-more" disabled type="button" class="btn btn-info">Charger 10 de plus</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" charset="utf-8">
+        $(function () {
+            var $lastDraws = $('#last-draws'),
+                $loadMore = $('#load-more');
+            var last10DrawsAfterIdUrl = '{{ url('last-10-draws', {'id' : 0}) }}';
+
+            var last10DrawsAfterIdAction = function () {
+                var id = $lastDraws.attr('data-last-id');
+
+                $.getJSON(last10DrawsAfterIdUrl.replace('/0/', '/' + id + '/'), function (last10DrawsAfterIdUrl) {
+                    $.each(last10DrawsAfterIdUrl[0], function (key, val) {
+                        var dateObj = new Date(val.jour.timestamp * 1000),
+                            dateTirage = dateObj.getDate() < 10 ? '0' + dateObj.getDate() : dateObj.getDate();
+                        dateTirage += '/' + ((dateObj.getMonth() + 1) < 10 ? '0' + (dateObj.getMonth() + 1) : (dateObj.getMonth() + 1));
+                        dateTirage += '/' + dateObj.getFullYear();
+
+                        var gagnant;
+                        for (var i = 0; i < val.gagnants.lenght; i++) {
+                            if(val.gagnants[i].rang == '1')
+                                gagnant = val.gagnants[i];
+                        }
+
+                        var newTr = '<tr> \
+                        <td>' + dateTirage + '</td> \
+                        <td>' + val.boule1 + '-' + val.boule2 + '-' + val.boule3 + '-' + val.boule4 + '-' + val.boule5 + ' / ' + val.etoile1 + '-' + val.etoile2 + '</td> \
+                        <td>' + (typeof gagnant != 'undefined' ? val.gagnants[12].nombre : '0') + '</td> \
+                        <td>' + (typeof gagnant != 'undefined' ? val.gagnants[12].gain : '0') + '</td> \
+                    </tr>';
+                        $lastDraws.append(newTr);
+                        $lastDraws.attr('data-last-id', val.id);
+                    });
+
+                    if (last10DrawsAfterIdUrl[0].length < 10)
+                        $loadMore.hide();
+                    else
+                        $loadMore.removeAttr('disabled');
+                });
+            };
+
+            last10DrawsAfterIdAction();
+
+            $loadMore.on('click', function () {
+                $loadMore.attr('disabled', true);
+
+                last10DrawsAfterIdAction();
+            })
+        });
+    </script>
+{% endblock %}

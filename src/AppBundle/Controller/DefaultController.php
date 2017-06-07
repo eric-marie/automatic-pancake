@@ -9,10 +9,17 @@ use AppBundle\Entity\Tirage;
 use AppBundle\Metier\FormValuesFinder;
 use AppBundle\Metier\ResultPage;
 use AppBundle\Repository\TirageRepository;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class DefaultController extends Controller
 {
@@ -167,6 +174,35 @@ class DefaultController extends Controller
             'top5' => $top5,
             'top5BestFriends' => $top5BestFriends
         ];
+    }
+
+    /**
+     * @Route("/last-draws/", name="last-draws")
+     * @Template()
+     */
+    public function lastDrawsAction()
+    {
+        return [];
+    }
+
+    /**
+     * @Route("/last-draws/{id}/", name="last-10-draws", requirements={"id" = "\d+"})
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function last10DrawsAfterIdAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var TirageRepository $tirageRepository */
+        $tirageRepository = $em->getRepository('AppBundle:Tirage');
+        $last10DrawsAfterId = $tirageRepository->getLast10DrawsAfterId($id);
+
+        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $normalizer = new ObjectNormalizer($classMetadataFactory);
+        $normalizer->setIgnoredAttributes(['tirage']);
+        $serializer = new Serializer([$normalizer], [new JsonEncoder()]);
+
+        return new JsonResponse([$serializer->normalize($last10DrawsAfterId, 'json')]);
     }
 
     /**

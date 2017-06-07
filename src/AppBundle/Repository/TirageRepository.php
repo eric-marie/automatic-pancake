@@ -184,4 +184,32 @@ SQL;
 
         return $statement->fetchAll();
     }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getLast10DrawsAfterId($id)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        if(0 < $id)
+            $qb->select('t')
+                ->from('AppBundle:Tirage', 't')
+                ->where('t.id < :id')
+                ->orderBy('t.jour', 'DESC')
+                ->setMaxResults(10)
+                ->setParameters([
+                    'id' => $id
+                ]);
+        else
+            $qb->select('t')
+                ->from('AppBundle:Tirage', 't')
+                ->orderBy('t.jour', 'DESC')
+                ->setMaxResults(10);
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
+    }
 }

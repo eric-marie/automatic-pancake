@@ -27,6 +27,9 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
+                        <li{{ app.request.attributes.get('_route') == 'last-draws' ? ' class="active"' }}>
+                            <a href="{{ path('last-draws') }}">Derniers tirages</a>
+                        </li>
                         <li class="dropdown{{ app.request.attributes.get('_route') in ['number-rate', 'star-rate'] ? ' active' }}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Statistiques <span class="caret"></span></a>
                             <ul class="dropdown-menu">
